@@ -1,4 +1,6 @@
-# pi-kube
+# Install Kubernetes on Raspberry Pi3B+
+
+# Master Node Setup
 Setup K8 on raspberry
 Note: you need to be familiar with Linux/Debian and Raspberry.
 
@@ -113,10 +115,10 @@ Important Note: This last statement, you need to copy it to join workers nodes t
 12.- Apply network driver
    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
     
-12.- On the master and all the workers run the following command
+13.- On the master and all the workers run the following command
     sudo sysctl net.bridge.bridge-nf-call-iptables=1
 
-13.- Run this command - note it will take some time to initialize the flannel-pod and core-DNS
+14.- Run this command - note it will take some time to initialize the flannel-pod and core-DNS
     kubectl get pods --all-namespaces
     Everything should be running
    
@@ -130,7 +132,17 @@ Important Note: This last statement, you need to copy it to join workers nodes t
       kube-system   kube-proxy-mpwgf                       1/1     Running   0          9m4s
       kube-system   kube-scheduler-k8s-master-1            1/1     Running   0          8m48s
 
-    
+  #Worker Node Setup
+  1.- For every worker node, runs same steps, but add this one to make it join the master
+      Remember this is coming from step 10
+      sudo kubeadm join --token <token> <master-node-ip>:6443 --discovery-token-ca-cert-hash sha256:<sha256>
+  
+      Important Note: This last statement, you need to copy it to join workers nodes to the master, run this on the master
+        if by any chance you forgot it, run this command on the master: kubeadm token list
+        If you need to create a new token use: kubeadm token create --print-join-command
+  
+  
+  
 
 
     
