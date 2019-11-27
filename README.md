@@ -25,6 +25,32 @@ Flash the a 64Gb min SD Card using fletcher or other image tool
         psk="your WiFi Password"
     }
   
+  Use the raspi-config utility to change the hostname to k8s-master-1 or similar and then reboot.
+  
+  Apply these changes for DNS to work
+      sudo nano /etc/hostnames
+      - should be blank
+
+      sudo nano /etc/hosts
+      Add your IP to you cluster host name, by default will be showing 127.0.0.1
+      192.168.56.x    XXX-node
+      
+      sudo rm -f /etc/resolv.conf  # Delete the symbolic link
+      sudo nano /etc/resolv.conf   # Create static file
+          # Content of static resolv.conf
+          nameserver 8.8.4.4
+          nameserver 8.8.8.8
+      
+     sudo reboot
+     After reboot., check : sudo nano /etc/resolv.conf and make sure is showing google DNS
+
+     Note if you are setting up this in ubuntu, this extra steps are required
+     sudo nano /etc/NetworkManager/NetworkManager.conf
+        [main]
+        plugins=ifupdown,keyfile,ofono
+        #dns=dnsmasq ==> MASK
+     sudo service network-manager restart
+  
   Reboot
   To check if it's working
     ifconfig
@@ -64,9 +90,9 @@ Flash the a 64Gb min SD Card using fletcher or other image tool
 10.- Install kubeadm and kubectl - the brain
     sudo apt-get install -qy kubeadm
     
-NOW lets setup the master node
+11- NOW lets setup the master node
   - sudo kubeadm config images pull -v3
-  - sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.X.X (XX your ip) ( we will use Flannel, you can use any other flannel, just check Kube official documentation)
+  (ONLY FOR MASTER)- sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.X.X (XX your ip) ( we will use Flannel, you can use any other flannel, just check Kube official documentation)
   Note: this should not be done in production , as the token will never expire
   
 When this complete , check at the instructions , you need to run this to enable the master, see below
@@ -88,29 +114,7 @@ Important Note: This last statement, you need to copy it to join workers nodes t
     if by any chance you forgot it, run this command on the master: kubeadm token list
     If you need to create a new token use: kubeadm token create --print-join-command
 
-11.- Apply these changes for DNS to work
-      sudo nano /etc/hostnames
-      - should be blank
 
-      sudo nano /etc/hosts
-      Add your IP to you cluster host name, by default will be showing 127.0.0.1
-      192.168.56.x    XXX-node
-      
-      sudo rm -f /etc/resolv.conf  # Delete the symbolic link
-      sudo nano /etc/resolv.conf   # Create static file
-          # Content of static resolv.conf
-          nameserver 8.8.4.4
-          nameserver 8.8.8.8
-      
-     sudo reboot
-     After reboot., check : sudo nano /etc/resolv.conf and make sure is showing google DNS
-
-     Note if you are setting up this in ubuntu, this extra steps are required
-     sudo nano /etc/NetworkManager/NetworkManager.conf
-        [main]
-        plugins=ifupdown,keyfile,ofono
-        #dns=dnsmasq ==> MASK
-     sudo service network-manager restart
 
 12.- Apply network driver
    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
@@ -132,8 +136,14 @@ Important Note: This last statement, you need to copy it to join workers nodes t
       kube-system   kube-proxy-mpwgf                       1/1     Running   0          9m4s
       kube-system   kube-scheduler-k8s-master-1            1/1     Running   0          8m48s
 
-  #Worker Node Setup
-  1.- For every worker node, runs same steps, but add this one to make it join the master
+  # Worker Node Setup
+  1.- Adding Worker Nodes
+    For the worker nodes on others raspberries, repeat everything except from kubeadm init.
+    Change hostname
+      Use the raspi-config utility to change the hostname to k8s-worker-1 or similar and then reboot.
+
+    Join the cluster
+    Replace the token / IP for the output you got from the master node, for example:
       Remember this is coming from step 10
       sudo kubeadm join --token <token> <master-node-ip>:6443 --discovery-token-ca-cert-hash sha256:<sha256>
   
