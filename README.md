@@ -64,7 +64,7 @@ Flash the a 64Gb min SD Card using fletcher or other image tool
     
 NOW lets setup the master node
   - sudo kubeadm config images pull -v3
-  - sudo kubeadm init --token-ttl=0 ( we will use Weave net, you can use any other flannel, just check Kube official documentation)
+  - sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.X.X (XX your ip) ( we will use Flannel, you can use any other flannel, just check Kube official documentation)
   Note: this should not be done in production , as the token will never expire
   
 When this complete , check at the instructions , you need to run this to enable the master, see below
@@ -86,17 +86,50 @@ Important Note: This last statement, you need to copy it to join workers nodes t
     if by any chance you forgot it, run this command on the master: kubeadm token list
     If you need to create a new token use: kubeadm token create --print-join-command
 
-11.- Apply network driver
-    kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+11.- Apply these changes for DNS to work
+      sudo nano /etc/hostnames
+      - should be blank
+
+      sudo nano /etc/hosts
+      Add your IP to you cluster host name, by default will be showing 127.0.0.1
+      192.168.56.x    XXX-node
+      
+      sudo rm -f /etc/resolv.conf  # Delete the symbolic link
+      sudo nano /etc/resolv.conf   # Create static file
+          # Content of static resolv.conf
+          nameserver 8.8.4.4
+          nameserver 8.8.8.8
+      
+     sudo reboot
+     After reboot., check : sudo nano /etc/resolv.conf and make sure is showing google DNS
+
+     Note if you are setting up this in ubuntu, this extra steps are required
+     sudo nano /etc/NetworkManager/NetworkManager.conf
+        [main]
+        plugins=ifupdown,keyfile,ofono
+        #dns=dnsmasq ==> MASK
+     sudo service network-manager restart
+
+12.- Apply network driver
+   kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
     
 12.- On the master and all the workers run the following command
     sudo sysctl net.bridge.bridge-nf-call-iptables=1
 
-13.- Run this command
+13.- Run this command - note it will take some time to initialize the flannel-pod and core-DNS
     kubectl get pods --all-namespaces
     Everything should be running
-    
-    
+   
+          NAMESPACE     NAME                                   READY   STATUS    RESTARTS   AGE
+      kube-system   coredns-5644d7b6d9-8smqz               1/1     Running   0          9m4s
+      kube-system   coredns-5644d7b6d9-knrj6               1/1     Running   0          9m4s
+      kube-system   etcd-k8s-master-1                      1/1     Running   0          8m46s
+      kube-system   kube-apiserver-k8s-master-1            1/1     Running   0          8m35s
+      kube-system   kube-controller-manager-k8s-master-1   1/1     Running   0          8m39s
+      kube-system   kube-flannel-ds-arm-w252m              1/1     Running   0          6m49s
+      kube-system   kube-proxy-mpwgf                       1/1     Running   0          9m4s
+      kube-system   kube-scheduler-k8s-master-1            1/1     Running   0          8m48s
+
     
 
 
