@@ -10,7 +10,7 @@ Flash the a 64Gb min SD Card using fletcher or other image tool
 As a reminder first time you enter into the raspberry the user is "pi" and the password "raspberry"
 I highly recommend once in the shell, enter "passwd" to change your password.
 
-1.- Configure you wifi (I recommend Ethernet if you can)
+--> Configure you wifi (I recommend Ethernet if you can)
    Option 1:
    sudo raspi-config
    Go to Network options
@@ -70,44 +70,33 @@ I highly recommend once in the shell, enter "passwd" to change your password.
     iwconfig
     or ping google.com
 
-2.- Enable SSH on Pi
+--> Enable SSH on Pi
   sudo raspi-config - interfacion options - SSH
   
-3.- Setup Docker ,  command installs docker and sets the right permission.
+--> Setup Docker ,  command installs docker and sets the right permission.
   curl -sSL get.docker.com | sh && \
   sudo usermod pi -aG docker && \
   newgrp docker 
 
-4.- Disable swap - it's mandatory for Kubernetes to work on Pi
+--> Disable swap - it's mandatory for Kubernetes to work on Pi
   sudo dphys-swapfile swapoff && \
   sudo dphys-swapfile uninstall && \
   sudo update-rc.d dphys-swapfile remove
 
-5.- Now edit the /boot/cmdline.txt file. Add the following in the end of the file, should be just one line
-   cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory
-  
-6.- reboot: sudo reboot
-
-7.- Edit the following file /etc/apt/sources.list.d/kubernetes.list and add
-    deb http://apt.kubernetes.io/ kubernetes-xenial main
-
-8.- Run this command to add the key
-    sudo curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-    if that fails , try step 4 again
-    if it works, output will show OK
- 
-9.- Update system
-    sudo apt-get update
+--> run this to setup Kubernetes 
+     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - && \
+     echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list && \
+     sudo apt-get update -q && \
+     sudo apt-get install -qy kubeadm
     
-10.- Install kubeadm and kubectl - the brain
-    sudo apt-get install -qy kubeadm
-    
-11- NOW lets setup the master node
-  - sudo kubeadm config images pull -v3
-  (ONLY FOR MASTER)- sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.X.X (XX your ip) ( we will use Flannel, you can use any other flannel, just check Kube official documentation)
-  user of weave-wrok had reported issues with ARM
+-->  NOW lets setup the master node
+   sudo kubeadm config images pull -v3 (this will take some minutes)
+  (ONLY FOR MASTER - for nodes read below)
+     sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.X.X (XX your ip)
+  Notewe will use Flannel, you can use any other flannel, just check Kube official documentation)  
+  Users of weave-wrok had reported issues with ARM
   
-When this complete , check at the instructions , you need to run this to enable the master, see below
+ When this complete , check at the instructions , you need to run this to enable the master, see below
 
     Your Kubernetes control-plane has initialized successfully!
     To start using your cluster, you need to run the following as a regular user:
@@ -127,14 +116,13 @@ Important Note: This last statement, you need to copy it to join workers nodes t
     If you need to create a new token use: kubeadm token create --print-join-command
 
 
-
-12.- Apply network driver
+--> Apply network driver
    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
     
-13.- On the master and all the workers run the following command
+--> On the master and all the workers run the following command
     sudo sysctl net.bridge.bridge-nf-call-iptables=1
 
-14.- Run this command - note it will take some time to initialize the flannel-pod and core-DNS
+--> Run this command - note it will take some time to initialize the flannel-pod and core-DNS
     kubectl get pods --all-namespaces
     Everything should be running
    
@@ -150,14 +138,18 @@ Important Note: This last statement, you need to copy it to join workers nodes t
 
   # Worker Node Setup
   1.- Adding Worker Nodes
-    For the worker nodes on others raspberries, repeat everything except from kubeadm init.
-    Change hostname
+   For the worker nodes on others raspberries, repeat all steps above except the kubeadm init command, for the workers use the join command
+   
+    Remember to Change hostname
       Use the raspi-config utility to change the hostname to k8s-worker-1 or similar and then reboot.
-
+    
     Join the cluster
     Replace the token / IP for the output you got from the master node, for example:
       Remember this is coming from step 10
       sudo kubeadm join --token <token> <master-node-ip>:6443 --discovery-token-ca-cert-hash sha256:<sha256>
+  
+  remmber to apply the network driver after join
+  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
   
       Important Note: This last statement, you need to copy it to join workers nodes to the master, run this on the master
         if by any chance you forgot it, run this command on the master: kubeadm token list
