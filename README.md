@@ -81,7 +81,8 @@ I highly recommend once in the shell, enter "passwd" to change your password.
 --> Disable swap - it's mandatory for Kubernetes to work on Pi
   sudo dphys-swapfile swapoff && \
   sudo dphys-swapfile uninstall && \
-  sudo update-rc.d dphys-swapfile remove
+  sudo update-rc.d dphys-swapfile remove &&\
+  sudo apt purge dphys-swapfile
 
 --> run this to setup Kubernetes 
      curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - && \
