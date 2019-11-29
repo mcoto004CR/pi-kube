@@ -89,8 +89,12 @@ I highly recommend once in the shell, enter "passwd" to change your password.
 
 
 --> run this to setup Kubernetes 
-     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - && \
-     echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list && \
+     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - 
+     
+     sudo nano /etc/apt/sources.list.d/kubernetes.list
+     Add this to the file: deb http://apt.kubernetes.io/ kubernetes-xenial main
+     
+     Then run 
      sudo apt-get update -q && \
      sudo apt-get install -qy kubeadm
     
