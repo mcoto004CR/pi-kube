@@ -11,6 +11,16 @@ As a reminder first time you enter into the raspberry the user is "pi" and the p
 I highly recommend once in the shell, enter "passwd" to change your password.
 
 1.- Configure you wifi (I recommend Ethernet if you can)
+  
+   Below you can setup your WiFI SSID
+     sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+      network={
+          ssid="your SSID"
+          psk="your WiFi Password"
+      }
+
+  then: sudo reboot
+  
   Use ifconfig, to get your current ip
   Copy your IP
 
@@ -20,13 +30,7 @@ I highly recommend once in the shell, enter "passwd" to change your password.
     static ip_address=192.168.XX.XXX/24   (XX.XX is the IP you copied in the previous point)
     static routers=192.168.X.X  (this is your router IP gateway)
     static domain_name_servers=8.8.8.8  (setup this to you prefered DNS or Google DNS)
-
-   Below you can setup your WiFI SSID
-   sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
-    network={
-        ssid="your SSID"
-        psk="your WiFi Password"
-    }
+ 
   
   Use the raspi-config utility to change the hostname to k8s-master-1 or similar and then reboot.
   
