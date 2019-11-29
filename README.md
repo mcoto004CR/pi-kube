@@ -99,10 +99,10 @@ I highly recommend once in the shell, enter "passwd" to change your password.
      sudo apt-get update -q 
      sudo apt-get install -qy kubeadm
     
--->  NOW lets setup the master node
-   sudo kubeadm config images pull -v3 (this will take some minutes)
-  (ONLY FOR MASTER - for nodes read below)
-     sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.X.X (XX your Master ip)
+-->  NOW lets setup the master node, (ONLY FOR MASTER - for nodes read below)
+   
+      sudo kubeadm config images pull -v3 (this will take some minutes)
+      sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.X.X (XX your Master ip)
   
   Note we will use Flannel, you can use any other but please check Kube official documentation)  
   Users of weave-wrok had reported issues with ARM
