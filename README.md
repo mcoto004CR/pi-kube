@@ -79,10 +79,9 @@ I highly recommend once in the shell, enter "passwd" to change your password.
   newgrp docker 
 
 4.- Disable swap - it's mandatory for Kubernetes to work on Pi
-  sudo dphys-swapfile swapoff
-  sudo dphys-swapfile uninstall
+  sudo dphys-swapfile swapoff && \
+  sudo dphys-swapfile uninstall && \
   sudo update-rc.d dphys-swapfile remove
-  sudo apt purge dphys-swapfile
 
 5.- Now edit the /boot/cmdline.txt file. Add the following in the end of the file, should be just one line
    cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory
