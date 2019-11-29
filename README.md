@@ -11,18 +11,24 @@ As a reminder first time you enter into the raspberry the user is "pi" and the p
 I highly recommend once in the shell, enter "passwd" to change your password.
 
 1.- Configure you wifi (I recommend Ethernet if you can)
-  
-   Below you can setup your WiFI SSID
-     sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+   Option 1:
+   sudo raspi-config
+   Go to Network options
+   Wi-fi option
+   and enter your wifi details
+   
+   Option 2 add this to wpa_supplicant.conf file:
+      country = XX (your country code, ie US)
+      sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
       network={
           ssid="your SSID"
           psk="your WiFi Password"
-      }
+        }
 
-  then: sudo reboot
+   then: sudo reboot
   
   Use ifconfig, to get your current ip
-  Copy your IP
+  Copy your IP , or you can setup any IP you want, just make sure is free on your router
 
   Below will enable a static IP so you can easy SSH
   sudo nano /etc/dhcpcd.conf and enter the following data
@@ -32,7 +38,7 @@ I highly recommend once in the shell, enter "passwd" to change your password.
     static domain_name_servers=8.8.8.8  (setup this to you prefered DNS or Google DNS)
  
   
-  Use the raspi-config utility to change the hostname to k8s-master-1 or similar and then reboot.
+  Use the raspi-config utility to change the hostname to k8s-master-1 or similar and then reboot (Network Options -> Hostnames).
   
   Apply these changes for DNS to work
       sudo nano /etc/hostnames
@@ -65,7 +71,7 @@ I highly recommend once in the shell, enter "passwd" to change your password.
     or ping google.com
 
 2.- Enable SSH on Pi
-  sudo raspi-config
+  sudo raspi-config - interfacion options - SSH
   
 3.- Setup Docker ,  command installs docker and sets the right permission.
   curl -sSL get.docker.com | sh && \
@@ -100,7 +106,7 @@ I highly recommend once in the shell, enter "passwd" to change your password.
 11- NOW lets setup the master node
   - sudo kubeadm config images pull -v3
   (ONLY FOR MASTER)- sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.X.X (XX your ip) ( we will use Flannel, you can use any other flannel, just check Kube official documentation)
-  Note: this should not be done in production , as the token will never expire
+  user of weave-wrok had reported issues with ARM
   
 When this complete , check at the instructions , you need to run this to enable the master, see below
 
