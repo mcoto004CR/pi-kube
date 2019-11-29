@@ -84,6 +84,10 @@ I highly recommend once in the shell, enter "passwd" to change your password.
   sudo update-rc.d dphys-swapfile remove &&\
   sudo apt purge dphys-swapfile
 
+--> Add cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory to sudo nano /boot/cmdline.txt, keep only one line
+    and sudo reboot
+
+
 --> run this to setup Kubernetes 
      curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - && \
      echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list && \
