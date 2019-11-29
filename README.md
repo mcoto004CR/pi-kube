@@ -7,6 +7,9 @@ Note: you need to be familiar with Linux/Debian and Raspberry.
 Get a copy of https://www.raspberrypi.org/downloads/raspbian/
 Flash the a 64Gb min SD Card using fletcher or other image tool
 
+As a reminder first time you enter into the raspberry the user is "pi" and the password "raspberry"
+I highly recommend once in the shell, enter "passwd" to change your password.
+
 1.- Configure you wifi (I recommend Ethernet if you can)
   Use ifconfig, to get your current ip
   Copy your IP
