@@ -159,7 +159,12 @@ Important Note: This last statement, you need to copy it to join workers nodes t
   
   
 
+Usefule commands
+Reset kube clkuster: kubeadmin reset
 
+Delete docker
+apt remove docker -y
+sudo dpkg --purge docker-ce
     
 
 
