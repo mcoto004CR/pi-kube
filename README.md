@@ -274,6 +274,7 @@ Pi commands
 https://dev.to/anton2079/kubernetes-k8s-private-cloud-with-raspberry-pi-4s-k0d
 https://www.infralovers.com/en/articles/2017/04/22/kubernetes-and-traefik-on-raspberry/
 https://www.youtube.com/watch?v=XvlkYL1dGbw
+https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/
 
 If you have issue with reaching between PODs run this command
     
