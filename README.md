@@ -31,16 +31,22 @@ I highly recommend once in the shell, enter "passwd" to change your password.
   Use ifconfig, to get your current ip
   Copy your IP , or you can setup any IP you want, just make sure is free on your router
 
-  Below will enable a static IP so you can easy SSH
+  Below will enable a static IP so you can easy SSH 
   
     sudo nano /etc/dhcpcd.conf and enter the following data
-    interface wlan0
+    interface wlan0 (Note if you are using ethernet as I recommended, use eth0)
     static ip_address=192.168.XX.XXX/24   (XX.XX is the IP you copied in the previous point)
     static routers=192.168.X.X  (this is your router IP gateway)
     static domain_name_servers=8.8.8.8  (setup this to you prefered DNS or Google DNS)
  
   
-  Use the raspi-config utility to change the hostname to k8s-master-1 or similar and then reboot (Network Options -> Hostnames).
+  Change Hostname
+  
+      raspi-config utility to change the hostname to k8s-master-1 or similar , all cluster must have a diferent hostname
+      reboot (Network Options -> Hostnames).
+  
+  After reboot , use ifconfig to make sure you get the static IP correctly
+  
   
   Apply these changes for DNS to work
          
@@ -50,15 +56,21 @@ I highly recommend once in the shell, enter "passwd" to change your password.
       sudo nano /etc/hosts
       Add your IP to you cluster host name, by default will be showing 127.0.0.1
       192.168.56.x    XXX-node
+  
+      NOTE, check if nameserver is correct
       
-      sudo rm -f /etc/resolv.conf  # Delete the symbolic link
-      sudo nano /etc/resolv.conf   # Create static file
-          # Content of static resolv.conf
-          nameserver 8.8.4.4
-          nameserver 8.8.8.8
+      sudo nano /etc/resolv.conf
+      make sure it's showing
+         nameserver 8.8.8.8
+         
+      If it's no matching above run the following commands
+            sudo rm -f /etc/resolv.conf  # Delete the symbolic link
+            sudo nano /etc/resolv.conf   # Create static file
+               # Content of static resolv.conf
+                 nameserver 8.8.8.8
       
      sudo reboot
-     After reboot., check : sudo nano /etc/resolv.conf and make sure is showing google DNS
+     if you modify the resolv.conf, after reboot., check : sudo nano /etc/resolv.conf and make sure is showing google DNS
 
      Note if you are setting up this in ubuntu, this extra steps are required
      sudo nano /etc/NetworkManager/NetworkManager.conf
@@ -67,16 +79,20 @@ I highly recommend once in the shell, enter "passwd" to change your password.
         #dns=dnsmasq ==> MASK
      sudo service network-manager restart
   
-  Reboot
-  To check if it's working
-    ifconfig
-    iwconfig
-    or ping google.com
+  To check if changea worked
+    
+      ifconfig
+      iwconfig
+      or ping google.com
 
 --> Enable SSH on Pi
   
       sudo raspi-config - interfacion options - SSH
-  
+
+--> enable sudo
+      
+      sudo su
+      
 --> Setup Docker ,  command installs docker and sets the right permission.
   
       curl -sSL get.docker.com | sh && \
@@ -89,17 +105,20 @@ I highly recommend once in the shell, enter "passwd" to change your password.
       sudo dphys-swapfile uninstall && \
       sudo update-rc.d dphys-swapfile remove &&\
       sudo apt purge dphys-swapfile
+      
+      When asked enter Y
 
---> Add cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory to 
+--> Change CGROUP 
 
       sudo nano /boot/cmdline.txt
+      Add at the endof the line add: cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory
       keep only one line
       and sudo reboot
 
 
 --> run this to setup Kubernetes 
      
-     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - 
+     sudo curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - 
      Response should be OK
      
      sudo nano /etc/apt/sources.list.d/kubernetes.list
@@ -109,10 +128,13 @@ I highly recommend once in the shell, enter "passwd" to change your password.
      sudo apt-get update -q 
      sudo apt-get install -qy kubeadm
     
--->  NOW lets setup the master node, (ONLY FOR MASTER - for nodes read below)
-   
-      sudo kubeadm config images pull -v3 (this will take some minutes)
-      sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.X.X (XX your Master ip)
+     sudo kubeadm config images pull -v3 (this will take some minutes)
+
+-->  NOW lets setup the -- MASTER -- node, (ONLY FOR MASTER - for worker nodes read below)
+      
+      ---------- AGAIN THIS COMMAND IS ONLY FOR THE MASTER, STOP HERE AND LOOK BELOW FOR WORKER SETUP --------------------
+         sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.X.X (XX your Master ip)
+      --------------------------------------------------------------------------------------------------------------------
   
   Note we will use Flannel, you can use any other but please check Kube official documentation)  
   Users of weave-wrok had reported issues with ARM
