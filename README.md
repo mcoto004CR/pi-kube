@@ -187,7 +187,8 @@ Important Note: This last statement, you need to copy it to join workers nodes t
       kube-system   kube-scheduler-k8s-master-1            1/1     Running   0          8m48s
 
   For some reasons if the Pi that holds the master reboots, you will get an error like host port connection not allowed when get back from the reboot and try to run kubectl, apply the following fix
-  
+  Error: The connection to the server localhost:8080 was refused - did you specify the right host or port?
+ 
       sudo -i
       swapoff -a
       exit
@@ -239,16 +240,45 @@ At the end should look something like this, names may change based on your nodes
 
 Usefule commands
 Reset kube clkuster: 
-         
+        
          kubeadmin reset
 
 Delete docker
 
       apt remove docker -y
       sudo dpkg --purge docker-ce
-    
+ 
+ Kubectl useful commands
+       
+        kubectl describe pod kube-controller-manager-XXXX -n kube-system (XXX is the name of your master controller, check the get --all-namespace output)
+        
+        kubectl get pods -o wide  --> list all pods deployments and in which node they are running
+        NAME                     READY   STATUS    RESTARTS   AGE   IP           NODE            NOMINATED NODE   READINESS GATES
+        nginx-86c57db685-qtzfj   1/1     Running   0          12m   10.244.2.3   pi-k8-worker2   <none>   
 
 
+         kubectl get deployments
+         NAME    READY   UP-TO-DATE   AVAILABLE   AGE
+         nginx   1/1     1            1           26m
+
+         kubectl get all -A
+         
+         Use to delete dashboard
+         kubectl --namespace kube-system delete deployment kubernetes-dashboard
+ 
+Pi commands
+
+      check CPU temp:  /opt/vc/bin/vcgencmd measure_temp
+
+# Deploying on Kubernetes
+https://dev.to/anton2079/kubernetes-k8s-private-cloud-with-raspberry-pi-4s-k0d
+https://www.infralovers.com/en/articles/2017/04/22/kubernetes-and-traefik-on-raspberry/
+https://www.youtube.com/watch?v=XvlkYL1dGbw
+
+If you have issue with reaching between PODs run this command
     
+    iptables -P FORWARD ACCEPT
+    https://github.com/coreos/flannel/issues/799
+ 
 
 
