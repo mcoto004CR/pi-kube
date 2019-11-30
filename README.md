@@ -4,7 +4,7 @@
 Setup K8 on raspberry
 Note: you need to be familiar with Linux/Debian and Raspberry.
 
-Get a copy of https://www.raspberrypi.org/downloads/raspbian/
+Get a copy Raspbian Lite of https://www.raspberrypi.org/downloads/raspbian/
 Flash the a 64Gb min SD Card using fletcher or other image tool
 
 As a reminder first time you enter into the raspberry the user is "pi" and the password "raspberry"
