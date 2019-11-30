@@ -42,11 +42,15 @@ I highly recommend once in the shell, enter "passwd" to change your password.
   
   Change Hostname
   
-      raspi-config utility to change the hostname to k8s-master-1 or similar , all cluster must have a diferent hostname
-      reboot (Network Options -> Hostnames).
+      sudo raspi-config
+      Go to (Network Options -> Hostnames) to change the hostname to k8s-master-1 or similar , all cluster must have a diferent hostname
+      sudo reboot 
   
   After reboot , use ifconfig to make sure you get the static IP correctly
   
+  --> Enable SSH on Pi
+  
+      sudo raspi-config - interfacion options - SSH
   
   Apply these changes for DNS to work
          
@@ -85,9 +89,7 @@ I highly recommend once in the shell, enter "passwd" to change your password.
       iwconfig
       or ping google.com
 
---> Enable SSH on Pi
-  
-      sudo raspi-config - interfacion options - SSH
+Starting at this point, you can SSH into the Pi, it's easy to copy/paste next commands, I recommend to use Putty
 
 --> enable sudo
       
@@ -202,12 +204,41 @@ Important Note: This last statement, you need to copy it to join workers nodes t
   
     
 
+At the end should look something like this, names may change based on your nodes names
+
+      pi@pi-k8-master:~ $ kubectl get nodes
+      NAME            STATUS   ROLES    AGE   VERSION
+      pi-k8-master    Ready    master   97m   v1.16.3
+      pi-k8-node1     Ready    <none>   52m   v1.16.3
+      pi-k8-worker2   Ready    <none>   16m   v1.16.3
+
+
+      pi@pi-k8-master:~ $ kubectl get pods --all-namespaces
+      NAMESPACE     NAME                                   READY   STATUS    RESTARTS   AGE
+      kube-system   coredns-5644d7b6d9-qz7rb               1/1     Running   0          97m
+      kube-system   coredns-5644d7b6d9-sxqfp               1/1     Running   0          97m
+      kube-system   etcd-pi-k8-master                      1/1     Running   0          96m
+      kube-system   kube-apiserver-pi-k8-master            1/1     Running   0          96m
+      kube-system   kube-controller-manager-pi-k8-master   1/1     Running   0          96m
+      kube-system   kube-flannel-ds-arm-kjrbz              1/1     Running   0          93m
+      kube-system   kube-flannel-ds-arm-lzwzg              1/1     Running   0          16m
+      kube-system   kube-flannel-ds-arm-szwc6              1/1     Running   0          52m
+      kube-system   kube-proxy-gk2p6                       1/1     Running   0          52m
+      kube-system   kube-proxy-lc8lb                       1/1     Running   0          16m
+      kube-system   kube-proxy-xr6f9                       1/1     Running   0          97m
+      kube-system   kube-scheduler-pi-k8-master            1/1     Running   0          96m
+
+
+
 Usefule commands
-Reset kube clkuster: kubeadmin reset
+Reset kube clkuster: 
+         
+         kubeadmin reset
 
 Delete docker
-apt remove docker -y
-sudo dpkg --purge docker-ce
+
+      apt remove docker -y
+      sudo dpkg --purge docker-ce
     
 
 
