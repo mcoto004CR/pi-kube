@@ -74,21 +74,27 @@ I highly recommend once in the shell, enter "passwd" to change your password.
   sudo raspi-config - interfacion options - SSH
   
 --> Setup Docker ,  command installs docker and sets the right permission.
-  curl -sSL get.docker.com | sh && \
-  sudo usermod pi -aG docker && \
-  newgrp docker 
+  
+      curl -sSL get.docker.com | sh && \
+      sudo usermod pi -aG docker && \
+      newgrp docker 
 
 --> Disable swap - it's mandatory for Kubernetes to work on Pi
+      
       sudo dphys-swapfile swapoff && \
       sudo dphys-swapfile uninstall && \
       sudo update-rc.d dphys-swapfile remove &&\
       sudo apt purge dphys-swapfile
 
---> Add cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory to sudo nano /boot/cmdline.txt, keep only one line
-    and sudo reboot
+--> Add cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory to 
+
+      sudo nano /boot/cmdline.txt
+      keep only one line
+      and sudo reboot
 
 
 --> run this to setup Kubernetes 
+     
      curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - 
      Response should be OK
      
