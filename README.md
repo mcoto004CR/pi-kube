@@ -122,7 +122,11 @@ I highly recommend once in the shell, enter "passwd" to change your password.
       sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
     You should now deploy a pod network to the cluster.
-    Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+    
+    --> In my case I 'm using flannel, runbelow command
+         kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
+    
+    This is from kube init, no need to do it --> Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
       https://kubernetes.io/docs/concepts/cluster-administration/addons/
 
     Then you can join any number of worker nodes by running the following on each as root:
@@ -133,9 +137,7 @@ Important Note: This last statement, you need to copy it to join workers nodes t
     If you need to create a new token use: kubeadm token create --print-join-command
 
 
---> Apply network driver
-   
-      kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
+
     
 --> On the master and all the workers run the following command
    
