@@ -10,28 +10,30 @@ Flash the a 64Gb min SD Card using fletcher or other image tool
 As a reminder first time you enter into the raspberry the user is "pi" and the password "raspberry"
 I highly recommend once in the shell, enter "passwd" to change your password.
 
---> Configure you wifi (I recommend Ethernet if you can)
+--> Configure you wifi (I highly recommend Ethernet if you can)
    Option 1:
-   sudo raspi-config
-   Go to Network options
-   Wi-fi option
-   and enter your wifi details
+      
+      sudo raspi-config
+      Go to Network options
+      Wi-fi option
+      and enter your wifi details
    
    Option 2 add this to wpa_supplicant.conf file:
+      
       country = XX (your country code, ie US)
       sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
       network={
           ssid="your SSID"
           psk="your WiFi Password"
         }
-
-   then: sudo reboot
+      then: sudo reboot
   
   Use ifconfig, to get your current ip
   Copy your IP , or you can setup any IP you want, just make sure is free on your router
 
   Below will enable a static IP so you can easy SSH
-  sudo nano /etc/dhcpcd.conf and enter the following data
+  
+    sudo nano /etc/dhcpcd.conf and enter the following data
     interface wlan0
     static ip_address=192.168.XX.XXX/24   (XX.XX is the IP you copied in the previous point)
     static routers=192.168.X.X  (this is your router IP gateway)
@@ -41,8 +43,9 @@ I highly recommend once in the shell, enter "passwd" to change your password.
   Use the raspi-config utility to change the hostname to k8s-master-1 or similar and then reboot (Network Options -> Hostnames).
   
   Apply these changes for DNS to work
-      sudo nano /etc/hostnames
-      - should be blank
+         
+         sudo nano /etc/hostnames
+         should be blank
 
       sudo nano /etc/hosts
       Add your IP to you cluster host name, by default will be showing 127.0.0.1
@@ -71,7 +74,8 @@ I highly recommend once in the shell, enter "passwd" to change your password.
     or ping google.com
 
 --> Enable SSH on Pi
-  sudo raspi-config - interfacion options - SSH
+  
+      sudo raspi-config - interfacion options - SSH
   
 --> Setup Docker ,  command installs docker and sets the right permission.
   
