@@ -186,6 +186,13 @@ Important Note: This last statement, you need to copy it to join workers nodes t
       kube-system   kube-proxy-mpwgf                       1/1     Running   0          9m4s
       kube-system   kube-scheduler-k8s-master-1            1/1     Running   0          8m48s
 
+  For some reasons if the Pi that holds the master reboots, you will get an error like host port connection not allowed when get back from the reboot and try to run kubectl, apply the following fix
+  
+      sudo -i
+      swapoff -a
+      exit
+      strace -eopenat kubectl version
+
   # Worker Node Setup
   1.- Adding Worker Nodes
    For the worker nodes on others raspberries, repeat all steps above except the kubeadm init command, for the workers use the join command
