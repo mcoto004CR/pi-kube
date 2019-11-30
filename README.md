@@ -134,14 +134,17 @@ Important Note: This last statement, you need to copy it to join workers nodes t
 
 
 --> Apply network driver
-   kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
+   
+      kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
     
 --> On the master and all the workers run the following command
-    sudo sysctl net.bridge.bridge-nf-call-iptables=1
+   
+      sudo sysctl net.bridge.bridge-nf-call-iptables=1
 
 --> Run this command - note it will take some time to initialize the flannel-pod and core-DNS
-    kubectl get pods --all-namespaces
-    Everything should be running
+      
+      kubectl get pods --all-namespaces
+      Everything should be running
    
           NAMESPACE     NAME                                   READY   STATUS    RESTARTS   AGE
       kube-system   coredns-5644d7b6d9-8smqz               1/1     Running   0          9m4s
@@ -165,15 +168,11 @@ Important Note: This last statement, you need to copy it to join workers nodes t
       Remember this is coming from step 10
       sudo kubeadm join --token <token> <master-node-ip>:6443 --discovery-token-ca-cert-hash sha256:<sha256>
   
-  remmber to apply the network driver after join
-  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
-  
-      Important Note: This last statement, you need to copy it to join workers nodes to the master, run this on the master
+        Important Note: This last statement, you need to copy it to join workers nodes to the master, run this on the master
         if by any chance you forgot it, run this command on the master: kubeadm token list
         If you need to create a new token use: kubeadm token create --print-join-command
   
-  
-  
+    
 
 Usefule commands
 Reset kube clkuster: kubeadmin reset
