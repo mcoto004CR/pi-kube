@@ -41,6 +41,7 @@ I highly recommend once in the shell, enter "passwd" to change your password.
     static routers=192.168.X.X  (this is your router IP gateway)
     static domain_name_servers=8.8.8.8  (setup this to you prefered DNS or Google DNS)
  
+ You may also need to make a reservation on your router’s DHCP table so these addresses don’t get given out to other devices on your  network.
   
   Change Hostname
   
@@ -62,6 +63,8 @@ I highly recommend once in the shell, enter "passwd" to change your password.
       sudo nano /etc/hosts
       Add your IP to you cluster host name, by default will be showing 127.0.0.1
       192.168.56.x    XXX-node
+      
+      Note: you need to add the IP address and hostnames of the other Pis on your environment.
   
       NOTE, check if nameserver is correct
       
