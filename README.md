@@ -276,12 +276,13 @@ https://www.infralovers.com/en/articles/2017/04/22/kubernetes-and-traefik-on-ras
 https://www.youtube.com/watch?v=XvlkYL1dGbw
 https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/
 
-If you have issue with reaching between PODs run this command
+If you have issue with reaching between PODs run this command after boot
     
     sudo iptables -P FORWARD ACCEPT
     https://github.com/coreos/flannel/issues/799
-    You can add this to startup
-    sudo nano /etc/rc.local
+  
+   
+
  
 
 
