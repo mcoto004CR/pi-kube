@@ -278,7 +278,7 @@ https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deplo
 
 If you have issue with reaching between PODs run this command
     
-    iptables -P FORWARD ACCEPT
+    sudo iptables -P FORWARD ACCEPT
     https://github.com/coreos/flannel/issues/799
  
 
