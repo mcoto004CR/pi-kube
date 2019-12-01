@@ -1,5 +1,7 @@
 # Install Kubernetes on Raspberry Pi3B+
 
+<img src="https://github.com/mcoto004CR/pi-kube/blob/master/kube_pi.JPG">
+
 # Master Node Setup
 Setup K8 on raspberry
 Note: you need to be familiar with Linux/Debian and Raspberry.
