@@ -280,6 +280,8 @@ If you have issue with reaching between PODs run this command
     
     sudo iptables -P FORWARD ACCEPT
     https://github.com/coreos/flannel/issues/799
+    You can add this to startup
+    sudo nano /etc/rc.local
  
 
 
