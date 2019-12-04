@@ -285,9 +285,14 @@ If you have issue with reaching between PODs run this command after boot
     
     sudo iptables -P FORWARD ACCEPT
     https://github.com/coreos/flannel/issues/799
+    
+If that didn't work after reboot, 
+    
+    Edit /etc/sysctl.conf
+    Uncomment or add the following line: net.ipv4.ip_forward=1
+    Reboot
   
    
 
- 
 
 
