@@ -2,7 +2,7 @@
 
 <img src="https://github.com/mcoto004CR/pi-kube/blob/master/kube_pi.JPG">
 
-# Master Node Setup
+## Master Node Setup
 Setup K8 on raspberry
 Note: you need to be familiar with Linux/Debian and Raspberry.
 
@@ -12,7 +12,7 @@ Flash the a 64Gb min SD Card using fletcher or other image tool
 As a reminder first time you enter into the raspberry the user is "pi" and the password "raspberry"
 I highly recommend once in the shell, enter "passwd" to change your password.
 
---> Configure you wifi (I highly recommend Ethernet if you can)
+### Configure you wifi (I highly recommend Ethernet if you can)
    Option 1:
       
       sudo raspi-config
@@ -43,7 +43,7 @@ I highly recommend once in the shell, enter "passwd" to change your password.
  
  You may also need to make a reservation on your router’s DHCP table so these addresses don’t get given out to other devices on your  network.
   
-  Change Hostname
+### Change Hostname
   
       sudo raspi-config
       Go to (Network Options -> Hostnames) to change the hostname to k8s-master-1 or similar , all cluster must have a diferent hostname
@@ -51,11 +51,11 @@ I highly recommend once in the shell, enter "passwd" to change your password.
   
   After reboot , use ifconfig to make sure you get the static IP correctly
   
-  --> Enable SSH on Pi
+ ### Enable SSH on Pi
   
       sudo raspi-config - interfacion options - SSH
   
-  Apply these changes for DNS to work
+  ### Apply these changes for DNS to work
          
          sudo nano /etc/hostnames
          should be blank
@@ -88,25 +88,25 @@ I highly recommend once in the shell, enter "passwd" to change your password.
         #dns=dnsmasq ==> MASK
      sudo service network-manager restart
   
-  To check if changea worked
+  ### To check if change worked
     
       ifconfig
       iwconfig
       or ping google.com
 
-Starting at this point, you can SSH into the Pi, it's easy to copy/paste next commands, I recommend to use Putty
+      Starting at this point, you can SSH into the Pi, it's easy to copy/paste next commands, I recommend to use Putty
 
---> enable sudo
+### enable sudo
       
       sudo su
       
---> Setup Docker ,  command installs docker and sets the right permission.
+### Setup Docker ,  command installs docker and sets the right permission.
   
       curl -sSL get.docker.com | sh && \
       sudo usermod pi -aG docker && \
       newgrp docker 
 
---> Disable swap - it's mandatory for Kubernetes to work on Pi
+### Disable swap - it's mandatory for Kubernetes to work on Pi
       
       sudo dphys-swapfile swapoff && \
       sudo dphys-swapfile uninstall && \
@@ -115,7 +115,7 @@ Starting at this point, you can SSH into the Pi, it's easy to copy/paste next co
       
       When asked enter Y
 
---> Change CGROUP 
+### Change CGROUP 
 
       sudo nano /boot/cmdline.txt
       Add at the endof the line add: cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory
@@ -123,7 +123,7 @@ Starting at this point, you can SSH into the Pi, it's easy to copy/paste next co
       and sudo reboot
 
 
---> run this to setup Kubernetes 
+### run this to setup Kubernetes 
      
      sudo curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - 
      Response should be OK
@@ -137,7 +137,7 @@ Starting at this point, you can SSH into the Pi, it's easy to copy/paste next co
     
      sudo kubeadm config images pull -v3 (this will take some minutes)
 
--->  NOW lets setup the -- MASTER -- node, (ONLY FOR MASTER - for worker nodes read below)
+### NOW lets setup the -- MASTER -- node, (ONLY FOR MASTER - for worker nodes read below)
       
       ---------- AGAIN THIS COMMAND IS ONLY FOR THE MASTER, STOP HERE AND LOOK BELOW FOR WORKER SETUP --------------------
          sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.X.X (XX your Master ip)
@@ -146,7 +146,7 @@ Starting at this point, you can SSH into the Pi, it's easy to copy/paste next co
   Note we will use Flannel, you can use any other but please check Kube official documentation)  
   Users of weave-wrok had reported issues with ARM
   
- When this complete , check at the instructions , you need to run this to enable the master, see below
+  When this complete , check at the instructions , you need to run this to enable the master, see below
 
     Your Kubernetes control-plane has initialized successfully!
     To start using your cluster, you need to run the following as a regular user:
@@ -172,11 +172,12 @@ Important Note: This last statement, you need to copy it to join workers nodes t
 
 
     
---> On the master and all the workers run the following command
+###  On the master and all the workers run the following command
    
       sudo sysctl net.bridge.bridge-nf-call-iptables=1
 
---> Run this command - note it will take some time to initialize the flannel-pod and core-DNS
+##  On the master and all the workers run the following command
+Run this command - note it will take some time to initialize the flannel-pod and core-DNS
       
       kubectl get pods --all-namespaces
       Everything should be running
@@ -199,8 +200,11 @@ Important Note: This last statement, you need to copy it to join workers nodes t
       exit
       strace -eopenat kubectl version
 
-  # Worker Node Setup
-  1.- Adding Worker Nodes
+## Worker Node Setup
+
+### On the master and all the workers run the following command
+
+### Adding Worker Nodes
    For the worker nodes on others raspberries, repeat all steps above except the kubeadm init command, for the workers use the join command
    
     Remember to Change hostname
@@ -217,7 +221,7 @@ Important Note: This last statement, you need to copy it to join workers nodes t
   
     
 
-At the end should look something like this, names may change based on your nodes names
+   At the end should look something like this, names may change based on your nodes names
 
       pi@pi-k8-master:~ $ kubectl get nodes
       NAME            STATUS   ROLES    AGE   VERSION
@@ -243,19 +247,19 @@ At the end should look something like this, names may change based on your nodes
 
 
 
-Usefule commands
-Reset kube clkuster: 
+## Usefule commands
+### Reset kube clkuster: 
         
          kubeadmin reset
 
-Delete docker
+### Delete docker
 
       apt remove docker -y
       sudo dpkg --purge docker-ce
  
- Kubectl useful commands
+ ## Kubectl useful commands
        
-        kubectl describe pod kube-controller-manager-XXXX -n kube-system (XXX is the name of your master controller, check the get --all-namespace output)
+### kubectl describe pod kube-controller-manager-XXXX -n kube-system (XXX is the name of your master controller, check the get --all-namespace output)
         
         kubectl get pods -o wide  --> list all pods deployments and in which node they are running
         NAME                     READY   STATUS    RESTARTS   AGE   IP           NODE            NOMINATED NODE   READINESS GATES
@@ -271,22 +275,27 @@ Delete docker
          Use to delete dashboard
          kubectl --namespace kube-system delete deployment kubernetes-dashboard
  
-Pi commands
+## Pi commands
 
       check CPU temp:  /opt/vc/bin/vcgencmd measure_temp
 
 # Deploying on Kubernetes
+I explain here how to create a custom docker image
+https://github.com/mcoto004CR/nginx-custom-image
+
+But you can also reference this other pages
 https://dev.to/anton2079/kubernetes-k8s-private-cloud-with-raspberry-pi-4s-k0d
 https://www.infralovers.com/en/articles/2017/04/22/kubernetes-and-traefik-on-raspberry/
 https://www.youtube.com/watch?v=XvlkYL1dGbw
 https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/
 
-If you have issue with reaching between PODs run this command after boot
+# IMPORTANT iptables issues on Pi
+## If you have issue with reaching between PODs run this command after boot
     
     sudo iptables -P FORWARD ACCEPT
     https://github.com/coreos/flannel/issues/799
     
-If that didn't work after reboot, modify this file on all nodes
+## If that didn't work after reboot, modify this file on all nodes
     
     Edit /etc/sysctl.conf
     Uncomment or add the following line: net.ipv4.ip_forward=1
